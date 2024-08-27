@@ -1,0 +1,9 @@
+{
+    "name": "App Training",
+    "short_name": "Training",
+    "start_url": "",
+    "display": "standalone",
+    "theme_color": "#FFFFFF",
+    "description": "Aplicativo para gerenciar treinos",
+    "orientation": "natural"
+}
