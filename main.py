@@ -2,57 +2,20 @@ import flet as ft
 from partials.content_home import Home
 from partials.content_edit import Edit
 from partials.content_view import View
+import json 
+import os
 
-class Dict:
+
+class FileJson:
     def __init__(self):
-        self.training = {
-            "SEGUNDA-FEIRA": {
-                "SUPINO INCLINADO": "4x8",
-                "PULL-UP": "4x8",
-                "AGACHAMENTO": "4x10",
-                "DESENVOLVIMENTO MILITAR": "4x8",
-                "ABDOMINAL": "3x15"
-            },
-            "TERÇA-FEIRA": {
-                "PESOS LIVRES": "4x8",
-                "REMADA CURVADA": "4x10",
-                "LEG PRESS": "4x12",
-                "EXTENSÃO DE TRÍCEPS": "4x10",
-                "CRUNCH": "3x20"
-            },
-            "QUARTA-FEIRA": {
-                "BENCH PRESS": "4x8",
-                "PULL-DOWN": "4x8",
-                "AFUNDO": "4x10",
-                "ROSCA DIRETA": "4x12",
-                "ABDOMINAL INVERTIDO": "3x15"
-            },
-            "QUINTA-FEIRA": {
-                "DEADLIFT": "4x8",
-                "MACHINE ROW": "4x10",
-                "LEG CURL": "4x12",
-                "FLEXÃO DE BRAÇO": "4x8",
-                "PLANK": "3x1min"
-            },
-            "SEXTA-FEIRA": {
-                "PUSH PRESS": "4x8",
-                "BARBELL CURL": "4x10",
-                "GORDURA NO GLÚTEO": "4x12",
-                "TRÍCEPS NA CORDA": "4x10",
-                "ABDOMINAL OBLIQUO": "3x15"
-            },
-            "SÁBADO": {
-                "SUPINO RETO": "4x8",
-                "PULL-UP": "4x8",
-                "AGACHAMENTO": "4x10",
-                "FLEXÃO DE BRAÇO": "4x8",
-                "ABDOMINAL BICICLETA": "3x20"
-            },
-            "DOMINGO": {}
-        }
+        # Define o caminho do arquivo JSON
+        self.file_path = "training.json"  # Localização padrão para desenvolvimento
 
     @property
-    def read_dict(self):
+    def read_json(self):
+        # Abre o arquivo JSON e carrega seu conteúdo
+        with open(self.file_path, "r", encoding="utf8") as file:
+            self.training = json.load(file)
         return self.training
 
 class AppTheme:
@@ -120,9 +83,9 @@ class App:
             ]
 
         )
-        self.dict = Dict().read_dict
+        self.file_json = FileJson().read_json
         self.home = ft.Container(
-            content=Home(dict=self.dict)
+            content=Home(file_json=self.file_json)
         )
         self.main()
 
@@ -140,11 +103,11 @@ class App:
             text = e.control.icon.upper()
 
         if text == "HOME":
-            self.home.content = Home(self.dict)
+            self.home.content = Home(self.file_json)
         elif text == "EDITAR TREINOS":
-            self.home.content = Edit(self.dict)
+            self.home.content = Edit(self.file_json)
         elif text == "VISUALIZAR TREINO":
-            self.home.content = View(self.dict)
+            self.home.content = View(self.file_json)
         
         self.page.update()
 

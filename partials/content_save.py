@@ -1,52 +1,7 @@
 from fpdf import FPDF
 from os import path, environ
 from platform import system
-
-training = {
-            "SEGUNDA-FEIRA": {
-                "SUPINO INCLINADO": "4x8",
-                "PULL-UP": "4x8",
-                "AGACHAMENTO": "4x10",
-                "DESENVOLVIMENTO MILITAR": "4x8",
-                "ABDOMINAL": "3x15"
-            },
-            "TERÇA-FEIRA": {
-                "PESOS LIVRES": "4x8",
-                "REMADA CURVADA": "4x10",
-                "LEG PRESS": "4x12",
-                "EXTENSÃO DE TRÍCEPS": "4x10",
-                "CRUNCH": "3x20"
-            },
-            "QUARTA-FEIRA": {
-                "BENCH PRESS": "4x8",
-                "PULL-DOWN": "4x8",
-                "AFUNDO": "4x10",
-                "ROSCA DIRETA": "4x12",
-                "ABDOMINAL INVERTIDO": "3x15"
-            },
-            "QUINTA-FEIRA": {
-                "DEADLIFT": "4x8",
-                "MACHINE ROW": "4x10",
-                "LEG CURL": "4x12",
-                "FLEXÃO DE BRAÇO": "4x8",
-                "PLANK": "3x1min"
-            },
-            "SEXTA-FEIRA": {
-                "PUSH PRESS": "4x8",
-                "BARBELL CURL": "4x10",
-                "GORDURA NO GLÚTEO": "4x12",
-                "TRÍCEPS NA CORDA": "4x10",
-                "ABDOMINAL OBLIQUO": "3x15"
-            },
-            "SÁBADO": {
-                "SUPINO RETO": "4x8",
-                "PULL-UP": "4x8",
-                "AGACHAMENTO": "4x10",
-                "FLEXÃO DE BRAÇO": "4x8",
-                "ABDOMINAL BICICLETA": "3x20"
-            },
-            "DOMINGO": {}
-        }
+from json import load
 
 class PDF(FPDF):
     def header(self):
@@ -56,7 +11,7 @@ class PDF(FPDF):
         # Adicionar título
         self.set_font(family="Arial", style='B', size=18)
         self.cell(w=30)  # Espaço para a imagem
-        self.cell(w=0, h=10, txt='Treino padrão não modificado', border=0, align='L')
+        self.cell(w=0, h=10, txt='Treino', border=0, align='L')
         self.ln(10)  # Espaço pós cabeçalho
 
         #Linha
@@ -83,6 +38,9 @@ def save_pdf() -> bool:
     # Criar PDF e adicionar conteúdo
     pdf = PDF()
     pdf.add_page()
+
+    with open(file="training.json", mode="r", encoding="utf8") as file:
+        training = load(file)
 
     for day, trainings in training.items():
         if trainings:

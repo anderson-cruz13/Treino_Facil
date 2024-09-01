@@ -18,15 +18,15 @@ def week():
     return day_week[day.weekday()]
 
 class Home(ft.UserControl):
-    def __init__(self, dict):
+    def __init__(self, file_json):
         super().__init__()
-        self.dict = dict
+        self.file_json = file_json
         self.day = week()
     
     def training_day(self):
         texts_training = []
 
-        for values in self.dict[self.day].items():
+        for values in self.file_json[self.day].items():
             texts_training.append(
                 ft.Text(
                     spans=[

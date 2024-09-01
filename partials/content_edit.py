@@ -1,10 +1,11 @@
 import flet as ft
 from time import sleep
+import json
 
 class Edit(ft.UserControl):
-    def __init__(self, dict):
+    def __init__(self, file_json):
         super().__init__()
-        self.dict = dict 
+        self.file_json = file_json 
         self.frame = ft.Container() # Content a ser atualizado conforme o dropdown
         self.fields = [] # Armazenamento dos textos
         self.day = None
@@ -24,11 +25,11 @@ class Edit(ft.UserControl):
             
         )
 
-        if self.day in self.dict:
+        if self.day in self.file_json:
         
             self.fields = []
 
-            for treino, repeticoes in self.dict[self.day].items():
+            for treino, repeticoes in self.file_json[self.day].items():
                 text_field = ft.ResponsiveRow(
                     col=12,
                     controls=[
@@ -64,7 +65,7 @@ class Edit(ft.UserControl):
             )
             self.update()
 
-    def save_dict(self, e=None):
+    def save_json(self, e=None):
         try:
             if self.day:
                 new_data = {} # Dict de novas informações
@@ -74,10 +75,20 @@ class Edit(ft.UserControl):
                     treino = treino_field.value.strip().lower()
                     repeticoes = repeticoes_field.value.strip()
 
+                    if not repeticoes:
+                        repeticoes = "4x8"
+
                     if treino and repeticoes:
                         new_data[treino] = repeticoes
 
-                self.dict[self.day] = new_data
+                self.file_json[self.day] = new_data
+
+                self.buttons_alert.content.controls[0].visible = True
+                self.buttons_alert.content.controls[1].visible = False
+
+                # Salva o JSON atualizado
+                with open("training.json", "w", encoding="utf8") as file:
+                    json.dump(self.file_json, file, ensure_ascii=False, indent=4)
 
                 self.buttons_alert.content.controls[0].visible = True
                 self.buttons_alert.content.controls[1].visible = False
@@ -86,7 +97,8 @@ class Edit(ft.UserControl):
                 self.buttons_alert.content.controls[0].visible = False
                 self.buttons_alert.content.controls[1].visible = True 
 
-        finally:          
+        finally:
+
             self.update()
 
             sleep(2)
@@ -129,6 +141,12 @@ class Edit(ft.UserControl):
             controls=self.fields
         )
         self.update()
+
+    def delete_fields(self, e=None):
+        for field in self.fields:
+            field.controls[0].value = ""
+            field.controls[1].value = ""
+            self.update()
 
     def build(self):
 
@@ -189,7 +207,7 @@ class Edit(ft.UserControl):
                             ft.dropdown.Option(
                                 text=days,
                                 on_click=lambda e: self.show_content(e),
-                            ) for days in self.dict.keys()
+                            ) for days in self.file_json.keys()
                         ],
                         label="Dia",
                         bgcolor=ft.colors.ON_BACKGROUND,
@@ -207,8 +225,9 @@ class Edit(ft.UserControl):
                     ft.Divider(color=ft.colors.PRIMARY),
                     ft.ResponsiveRow(
                         controls=[
-                            ft.IconButton(icon=ft.icons.SAVE, style=self.button_style, col=6, on_click=self.save_dict),
-                            ft.IconButton(icon=ft.icons.ADD, style=self.button_style, col=6, on_click=self.create_field)
+                            ft.IconButton(icon=ft.icons.SAVE, style=self.button_style, col=5, on_click=self.save_json),
+                            ft.IconButton(icon=ft.icons.ADD, style=self.button_style, col=5, on_click=self.create_field),
+                            ft.IconButton(icon=ft.icons.DELETE, style=self.button_style, col=2, on_click=self.delete_fields)
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                     )

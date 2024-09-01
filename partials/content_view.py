@@ -3,14 +3,14 @@ from partials.content_save import save_pdf
 from time import sleep
 
 class View(ft.UserControl):
-    def __init__(self, dict):
+    def __init__(self, file_json):
         super().__init__()
-        self.dict = dict
+        self.file_json = file_json
     
     def container_content(self):
         containers = []
 
-        for day, trainings in self.dict.items():
+        for day, trainings in self.file_json.items():
             training_text = []
 
             for training, reps in trainings.items():
