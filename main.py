@@ -1,29 +1,56 @@
+"""Módulo principal da aplicação"""
+
+import json
+from typing import Dict
 import flet as ft
 from partials.content_home import Home
 from partials.content_edit import Edit
 from partials.content_view import View
-import json 
-import os
 
 
 class FileJson:
-    def __init__(self):
-        # Define o caminho do arquivo JSON
-        self.file_path = "training.json"  # Localização padrão para desenvolvimento
+    """Classe para o arquivo JSON"""
+
+    def __init__(self) -> None:
+        # Define o caminho do arquivo JSON e carrega o conteúdo se o arquivo
+        # existir
+        self.file_path = "training.json"
+        self.file_json: Dict[str, Dict] = {
+            "SEGUNDA-FEIRA": {},
+            "TERÇA-FEIRA": {},
+            "QUARTA-FEIRA": {},
+            "QUINTA-FEIRA": {},
+            "SEXTA-FEIRA": {},
+            "SÁBADO": {},
+            "DOMINGO": {},
+        }
+        self.load_json()
+
+    def load_json(self) -> None:
+        """Carrega o JSON do arquivo, se existir, ou cria o arquivo
+        com o conteúdo padrão"""
+        try:
+            with open(self.file_path, "r", encoding="utf8") as file:
+                self.file_json = json.load(file)
+        except FileNotFoundError:
+            with open(self.file_path, mode="w", encoding="utf8") as file:
+                json.dump(self.file_json, file, ensure_ascii=False, indent=4)
 
     @property
-    def read_json(self):
-        # Abre o arquivo JSON e carrega seu conteúdo
-        with open(self.file_path, "r", encoding="utf8") as file:
-            self.training = json.load(file)
-        return self.training
+    def read_json(self) -> Dict[str, Dict]:
+        """Retorna o arquivo json."""
+        return self.file_json
+
 
 class AppTheme:
+    """Classe para aplicar tema."""
+
     def __init__(self, dark_mode=False):
         self.dark_mode = dark_mode
         self.update_theme()
 
     def update_theme(self):
+        """Atualizar o tema."""
         if self.dark_mode:
             self.theme = ft.Theme(
                 color_scheme=ft.ColorScheme(
@@ -49,6 +76,8 @@ class AppTheme:
 
 
 class App:
+    """Classe principal de redenrização"""
+
     def __init__(self, page: ft.Page):
         self.page = page
         self.page.title = "Treino Fácil"
@@ -63,44 +92,47 @@ class App:
             leading=ft.IconButton(
                 icon=ft.icons.HOME,
                 on_click=lambda e: self.change_content(e),
-                icon_color=ft.colors.PRIMARY
+                icon_color=ft.colors.PRIMARY,
             ),
             actions=[
                 ft.TextButton(
                     text="Editar Treinos",
                     icon=ft.icons.EDIT_ATTRIBUTES,
-                    on_click=lambda e: self.change_content(e)
+                    on_click=lambda e: self.change_content(e),
                 ),
                 ft.TextButton(
                     text="Visualizar Treino",
                     icon=ft.icons.VIEW_COLUMN_OUTLINED,
-                    on_click=lambda e: self.change_content(e)
+                    on_click=lambda e: self.change_content(e),
                 ),
                 ft.IconButton(
-                    icon=ft.icons.DARK_MODE if not self.app_theme.dark_mode else ft.icons.LIGHT_MODE,
-                    on_click=lambda e: self.toggle_theme(e)
-                )
-            ]
-
+                    icon=(
+                        ft.icons.DARK_MODE
+                        if not self.app_theme.dark_mode
+                        else ft.icons.LIGHT_MODE
+                    ),
+                    on_click=lambda e: self.toggle_theme(e),
+                ),
+            ],
         )
         self.file_json = FileJson().read_json
-        self.home = ft.Container(
-            content=Home(file_json=self.file_json)
-        )
+        self.home = ft.Container(content=Home(file_json=self.file_json))
         self.main()
 
     def toggle_theme(self, e=None):
+        """Função para mudar o tema."""
         self.app_theme.dark_mode = not self.app_theme.dark_mode
         self.app_theme.update_theme()
         self.page.theme = self.app_theme.theme
-        self.page.appbar.actions[-1].icon = ft.icons.DARK_MODE if not self.app_theme.dark_mode else ft.icons.LIGHT_MODE
+        self.page.appbar.actions[-1].icon = ft.icons.DARK_MODE if not self.app_theme.dark_mode else ft.icons.LIGHT_MODE  # type: ignore
         self.page.update()
 
     def change_content(self, e=None):
+        """Função para mudar o conteúdo."""
         try:
-            text = e.control.text.upper()
+            text = e.control.text.upper()  # type: ignore
         except AttributeError:
-            text = e.control.icon.upper()
+            text = e.control.icon.upper()  # type: ignore
 
         if text == "HOME":
             self.home.content = Home(self.file_json)
@@ -108,11 +140,11 @@ class App:
             self.home.content = Edit(self.file_json)
         elif text == "VISUALIZAR TREINO":
             self.home.content = View(self.file_json)
-        
+
         self.page.update()
 
     def main(self):
-
+        """Função principal."""
         self.layout = ft.Container(
             expand=True,
             bgcolor=ft.colors.BACKGROUND,
@@ -126,33 +158,45 @@ class App:
                         col=12,
                         controls=[
                             ft.Text(
-                                    col=6,
-                                    value="© Todos os direitos reservados. Anderson Gabriel Pereira Cruz 2024.", 
-                                    color=ft.colors.PRIMARY,),                  
+                                col=6,
+                                value="© Todos os direitos reservados. Anderson Gabriel Pereira Cruz 2024.",
+                                color=ft.colors.PRIMARY,
+                            ),
                             ft.Row(
                                 col=6,
                                 controls=[
                                     ft.TextButton(
                                         col=6,
                                         text="andersong.pereiracruz@gmail.com",
-                                        style=ft.ButtonStyle(color=ft.colors.PRIMARY,),
-                                        url="mailto:andersong.pereiracruz@gmail.com"
+                                        style=ft.ButtonStyle(
+                                            color=ft.colors.PRIMARY,
                                         ),
-                                    ft.IconButton(
-                                        content=ft.Image(src="icons/git_hub.png", height=20, color=ft.colors.PRIMARY,)
+                                        url="mailto:andersong.pereiracruz@gmail.com",
                                     ),
                                     ft.IconButton(
-                                        content=ft.Image(src="icons/instagram.png", height=20, color=ft.colors.PRIMARY,)
-                                    )
-                                ]
-                            )
+                                        content=ft.Image(
+                                            src="icons/git_hub.png",
+                                            height=20,
+                                            color=ft.colors.PRIMARY,
+                                        )
+                                    ),
+                                    ft.IconButton(
+                                        content=ft.Image(
+                                            src="icons/instagram.png",
+                                            height=20,
+                                            color=ft.colors.PRIMARY,
+                                        )
+                                    ),
+                                ],
+                            ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    )
-                ]
-            )
+                    ),
+                ],
+            ),
         )
         self.page.add(self.layout)
-        
+
+
 if __name__ == "__main__":
     ft.app(target=App, assets_dir="assets")
