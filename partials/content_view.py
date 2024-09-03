@@ -1,13 +1,17 @@
+"""Visualiza todos os treinos na pagina de view."""
+from time import sleep
 import flet as ft
 from partials.content_save import save_pdf
-from time import sleep
+
 
 class View(ft.UserControl):
+    """Classe principal."""
     def __init__(self, file_json):
         super().__init__()
         self.file_json = file_json
-    
+
     def container_content(self):
+        """Garante todos os dados json em containers separados."""
         containers = []
 
         for day, trainings in self.file_json.items():
@@ -19,35 +23,45 @@ class View(ft.UserControl):
                         spans=[
                             ft.TextSpan(
                                 text=f"{training.upper()} ",
-                                style=ft.TextStyle(color=ft.colors.ON_PRIMARY, weight=ft.FontWeight.BOLD)
+                                style=ft.TextStyle(
+                                    color=ft.colors.ON_PRIMARY,
+                                    weight=ft.FontWeight.BOLD,
+                                ),
                             ),
                             ft.TextSpan(
                                 text=f" {reps}",
-                                style=ft.TextStyle(color=ft.colors.PRIMARY, weight=ft.FontWeight.W_900)
-                            )
+                                style=ft.TextStyle(
+                                    color=ft.colors.PRIMARY,
+                                    weight=ft.FontWeight.W_900
+                                ),
+                            ),
                         ]
                     )
                 )
-                
+
             container_day = ft.Container(
                 padding=ft.padding.all(10),
                 content=ft.ResponsiveRow(
                     controls=[
-                        ft.Text(value=day, weight=ft.FontWeight.W_900, color=ft.colors.PRIMARY),
+                        ft.Text(
+                            value=day,
+                            weight=ft.FontWeight.W_900,
+                            color=ft.colors.PRIMARY,
+                        ),
                         *training_text,
-                        ft.Divider(color=ft.colors.PRIMARY)
+                        ft.Divider(color=ft.colors.PRIMARY),
                     ]
-                )
+                ),
             )
             containers.append(container_day)
-        
+
         return ft.Column(
             expand=True,
             scroll=ft.ScrollMode.HIDDEN,
-            controls=containers
-        )
-    
+            controls=containers)
+
     def verify_save(self):
+        """Exibir aviso de salvamento."""
         self.avise.controls[2].visible = True
         self.avise.controls[2].col = 12
         self.avise.update()
@@ -70,7 +84,7 @@ class View(ft.UserControl):
             self.avise.controls[1].visible = True
             self.avise.controls[0].col = 0
             self.avise.controls[1].col = 12
-        
+
         # Atualiza a interface para refletir as mudanças
         self.avise.update()
 
@@ -80,10 +94,10 @@ class View(ft.UserControl):
         # Esconder ambos os botões
         self.avise.controls[0].visible = False
         self.avise.controls[1].visible = False
-        
+
         # Atualiza a interface novamente
         self.avise.update()
-    
+
     def build(self):
 
         self.avise = ft.ResponsiveRow(
@@ -98,7 +112,7 @@ class View(ft.UserControl):
                         color=ft.colors.GREEN,
                     ),
                     disabled=True,
-                    visible=False
+                    visible=False,
                 ),
                 ft.TextButton(
                     col=0,
@@ -109,17 +123,19 @@ class View(ft.UserControl):
                         color=ft.colors.RED,
                     ),
                     disabled=True,
-                    visible=False
+                    visible=False,
                 ),
                 ft.Text(
                     col=0,
                     value="BAIXANDO ...",
-                    style=ft.TextStyle(color=ft.colors.PRIMARY,),
+                    style=ft.TextStyle(
+                        color=ft.colors.PRIMARY,
+                    ),
                     weight=ft.FontWeight.W_500,
                     visible=False,
-                    text_align=ft.TextAlign.CENTER
-                )
-            ]
+                    text_align=ft.TextAlign.CENTER,
+                ),
+            ],
         )
 
         return ft.Container(
@@ -127,13 +143,13 @@ class View(ft.UserControl):
                 controls=[
                     self.container_content(),
                     ft.IconButton(
-                        icon=ft.icons.DOWNLOAD, 
-                        tooltip="Salvar em PDF", 
-                        on_click=lambda e: self.verify_save()
+                        icon=ft.icons.DOWNLOAD,
+                        tooltip="Salvar em PDF",
+                        on_click=lambda e: self.verify_save(),
                     ),
-                    self.avise
+                    self.avise,
                 ]
             ),
             bgcolor=ft.colors.BACKGROUND,
-            padding=ft.padding.all(10)
+            padding=ft.padding.all(10),
         )

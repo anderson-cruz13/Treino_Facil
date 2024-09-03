@@ -1,8 +1,10 @@
-import flet as ft
+"""Pagína princial: exibe o treino do dia."""
 from datetime import datetime
+import flet as ft
 
 
 def week():
+    """Função para exibir o dia."""
     day = datetime.now()
 
     day_week = {
@@ -17,13 +19,16 @@ def week():
 
     return day_week[day.weekday()]
 
+
 class Home(ft.UserControl):
+    """Classe principal."""
     def __init__(self, file_json):
         super().__init__()
         self.file_json = file_json
         self.day = week()
-    
+
     def training_day(self):
+        """Exibe o treino do dia correspondente."""
         texts_training = []
 
         for values in self.file_json[self.day].items():
@@ -35,25 +40,20 @@ class Home(ft.UserControl):
                             style=ft.TextStyle(
                                 color=ft.colors.ON_PRIMARY,
                                 weight=ft.FontWeight.BOLD,
-                            )
+                            ),
                         ),
                         ft.TextSpan(
                             text=f" {values[1]}",
                             style=ft.TextStyle(
                                 color=ft.colors.PRIMARY,
                                 weight=ft.FontWeight.W_900
-                            )
-                        )
+                            ),
+                        ),
                     ]
                 )
             )
-        
 
-        training = ft.Column(
-            controls=[
-                *texts_training
-            ]
-        )
+        training = ft.Column(controls=[*texts_training])
 
         return ft.Container(
             expand=True,
@@ -71,12 +71,12 @@ class Home(ft.UserControl):
                         value=self.day,
                         size=16,
                         color=ft.colors.PRIMARY,
-                        weight=ft.FontWeight.W_900
+                        weight=ft.FontWeight.W_900,
                     ),
                     ft.Divider(color=ft.colors.SECONDARY),
-                    training
-                ]
-            )
+                    training,
+                ],
+            ),
         )
 
     def build(self):
@@ -91,6 +91,6 @@ class Home(ft.UserControl):
                         src="images/logo.png",
                         opacity=0.1,
                     ),
-                ]
-            )
+                ],
+            ),
         )
